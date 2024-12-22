@@ -22,3 +22,23 @@ curl -H 'Content-Type: application/json' \
 https://github.com/transmission/transmission/blob/main/docs/rpc-spec.md
 
 https://transmission-rpc.readthedocs.io/en/v7.0.11/client.html
+
+### Systemd
+
+`sudo nano /etc/systemd/system/transmission-proxy.service`
+
+```
+[Unit]
+Description=transmission-proxy
+After=network.target
+
+[Service]
+User=<user>
+Group=<group>
+WorkingDirectory=/home/<user>/transmission-proxy
+ExecStart=/home/<user>/.pyenv/versions/3.12.8/envs/fastapi/bin/uvicorn main:app --host 0.0.0.0 --port 8000
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+```
