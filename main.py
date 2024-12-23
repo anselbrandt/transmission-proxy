@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request, Header, BackgroundTasks
+from fastapi import FastAPI, Request, Header, BackgroundTasks, Response, status
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -38,15 +38,20 @@ async def add(magnetlink: MagnetLink):
 
 
 @app.delete("/delete/{id}")
-async def delete(id):
+async def delete(id, response: Response):
     try:
         torrentClient.remove_torrent(id, delete_data=True)
+        response.status_code = status.HTTP_200_OK
+        return response
     except Exception as error:
         print(str(error))
         return str(error)
 
 
 @app.post("/copy/")
-async def copy(torrent: PartialTorrent, background_tasks: BackgroundTasks):
+async def copy(
+    torrent: PartialTorrent, background_tasks: BackgroundTasks, response: Response
+):
     background_tasks.add_task(copy_files, torrent)
-    return "Copying..."
+    response.status_code = status.HTTP_200_OK
+    return response
